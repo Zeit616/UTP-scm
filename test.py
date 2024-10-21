@@ -6,15 +6,14 @@ import time
 import re
 import nltk
 from nltk.corpus import stopwords
-from flair.models import TextClassifier
-from flair.data import Sentence
+from transformers import pipeline  # Importamos el pipeline de Hugging Face
 
 # Descargar stopwords la primera vez
 nltk.download('stopwords')
 stop_words = set(stopwords.words('spanish'))
 
-# Inicializar el clasificador de Flair para análisis de sentimiento
-classifier = TextClassifier.load('es-sentiment')  # Usamos el modelo en español
+# Inicializar el clasificador de transformers para análisis de sentimiento
+classifier = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
 
 # Configuración de Selenium para usar Microsoft Edge
 def iniciar_driver():
@@ -59,20 +58,16 @@ def extraer_opiniones(url):
     driver.quit()
     return opiniones
 
-# Función para analizar el sentimiento con Flair
-def analizar_sentimiento_flair(opinion):
-    # Crear una oración para Flair
-    sentence = Sentence(opinion)
-    # Predecir el sentimiento usando el modelo preentrenado
-    classifier.predict(sentence)
-    # Obtener el resultado de la predicción
-    label = sentence.labels[0]
-    # Flair devuelve 'POSITIVE' o 'NEGATIVE' con un score. Mapeamos a categorías más detalladas.
-    if label.value == 'POSITIVE' and label.score >= 0.75:
+# Función para analizar el sentimiento con transformers
+def analizar_sentimiento_transformers(opinion):
+    # Usamos el clasificador para predecir el sentimiento
+    resultado = classifier(opinion)[0]
+    # Hugging Face devuelve etiquetas como '1 estrella', '5 estrellas', etc.
+    if '5' in resultado['label']:
         return 'Muy Positivo'
-    elif label.value == 'POSITIVE':
+    elif '4' in resultado['label']:
         return 'Positivo'
-    elif label.value == 'NEGATIVE' and label.score >= 0.75:
+    elif '1' in resultado['label']:
         return 'Muy Negativo'
     else:
         return 'Negativo'
@@ -95,10 +90,8 @@ opiniones = extraer_opiniones(url)
 # Limpiar las opiniones
 opiniones_limpias = [limpiar_texto(opinion) for opinion in opiniones]
 
-# Analizar el sentimiento de cada opinión usando Flair
-sentimientos = [analizar_sentimiento_flair(opinion) for opinion in opiniones_limpias]
+# Analizar el sentimiento de cada opinión usando transformers
+sentimientos = [analizar_sentimiento_transformers(opinion) for opinion in opiniones_limpias]
 
 # Guardar en CSV
-guardar_en_csv(opiniones, sentimientos, 'opiniones_utp_psicologia_flair.csv')
-
-
+guardar_en_csv(opiniones, sentimientos, 'opiniones_utp_transformers.csv')
