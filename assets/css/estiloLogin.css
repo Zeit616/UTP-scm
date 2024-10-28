@@ -1,0 +1,202 @@
+.contenedorPrincipal{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    height: 100vh;
+    align-items: center;
+}
+.cajaPromocion{
+    grid-column: 1/3;
+    background-image: url(../img/pcLogo.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    height: 100%;
+}
+.CompañiaPadreCel{
+    display: none;
+}
+.CompañiaPadre{
+    position: absolute;
+    bottom: 25px;
+    right: 0;
+    width: 15%;
+}
+
+.blur{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgb(211, 28, 28);
+    background: linear-gradient(130deg, rgb(113, 25, 25) 0%, rgba(212, 63, 63, 0.711) 58%, rgb(237, 175, 175) 100%); 
+    backdrop-filter: blur(2px);
+}
+
+.textoPromocional{
+    position: relative;        
+    top: 30%;
+    color: white;    
+}
+
+.titulo, .descripcion, .sobreTitulo{
+    font-family: 'Oxygen', sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-left: 10%;
+}
+
+.sobreTitulo{
+    font-size: 20px;
+}
+
+.titulo{    
+    font-weight: bold;
+    font-size: 64px;
+}
+
+.descripcion{
+    font-family: 'Oxygen', sans-serif;
+    font-weight:normal;
+    font-size: 24px;
+}
+
+.titulo::after{
+    content: "";
+    font-size: 10px;    
+    display: block;
+    width: 60%;
+    height: 3px;
+    margin-top: 5px;
+    background-color: white;
+}
+
+.cajaLogin{
+    min-width: 350px;
+    padding: 0 10px 0 10px;
+    text-align: center;
+}
+
+.container1{
+    height: 90%;
+}
+
+.logoEmpresa{ 
+    margin-bottom: 45px;    
+}
+
+.logoEmpresa img{
+    width: 70%;
+}
+
+.formularioLogin{
+    flex-direction: column;
+    text-align: center; 
+}
+
+.inputUsuario, .inputContraseña{
+    border: none;
+    background-color: transparent;
+    outline: none;
+    border-radius: 0;
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(to right, #701919, #edafaf);
+    border-image-slice: 1;
+    width: 80%;
+    color: rgb(153, 51, 68);
+    font-size: 15px;
+    font-family: 'Oxygen', sans-serif;
+    font-weight: bold;
+    color: #ff7f85;
+    margin-bottom: 20px;
+}
+
+.inputUsuario:focus, .inputContraseña:focus{
+    outline: none;
+    box-shadow: none;
+}
+
+.inputUsuario::placeholder, .inputContraseña::placeholder{
+    font-family: 'Oxygen', sans-serif;
+    font-weight: bold;
+    color: #edafaf;
+}
+
+.botonSubmit{
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: none;
+    border: none;
+    width: 40%;
+    height: 35px;
+    font-family: 'Oxygen', sans-serif;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;    
+    background: -webkit-linear-gradient(left, #701919, #edafaf);
+    margin-bottom: 25px;
+}
+
+.contraseñaOlvidada{
+    color: #000000;
+    text-decoration: none;
+    font-family: 'Oxygen', sans-serif;
+    font-weight: light;
+    font-size: 14px;
+    margin-top: 200px;
+}
+
+@media (max-width: 1049px) {
+    .cajaPromocion{
+        grid-column: 1/1;
+    }
+}
+
+@media (max-width: 699px) {
+    body{
+        height: 100vh;
+        width: 100vw;
+        overflow-x: hidden;
+    }
+    .cajaPromocion{
+        display: none;
+    }
+
+    .prueba{
+        width: 100%;
+        position: relative;
+    }
+
+    .cajaLogin{
+        height: 100%;
+        display: flex;
+        align-items: center;
+        background-image: url(../img/celularLogo.jpg);
+        position: relative;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+    .blurLogin{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.308);        
+        backdrop-filter: blur(5px);
+    }
+    .CompañiaPadre{
+        display: none;
+    }
+    .CompañiaPadreCel{
+        display: block;
+        position: absolute;
+        bottom: 15px;
+        transform: translateX(50%);
+        right: 50%;
+        width: 50%;
+        z-index: 1;
+    }
+}  

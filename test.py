@@ -70,7 +70,7 @@ def analizar_sentimiento_transformers(opinion):
     elif '1' in resultado['label']:
         return 'Muy Negativo'
     else:
-        return 'Negativo'
+        return 'Neutro'
 
 # Guardar los resultados en un archivo CSV
 def guardar_en_csv(opiniones, sentimientos, archivo):

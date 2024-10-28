@@ -1,0 +1,83 @@
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Last-Modified" content="0">
+<meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+<meta http-equiv="Pragma" content="no-cache">
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Leche Gloria | Sistema de Control de Medios</title>
+
+    <link rel="shortcut icon" href="assets/img/favicon.png"" type="image/x-icon">
+
+    <!--Sweet alert2-->
+        <link rel="stylesheet" href="assets/css/sweetAlert2/sweetalert2.min.css">
+    
+    <!--Boostrap 5-->
+        <link rel="stylesheet" href="assets/css/boostrap5/bootstrap.min.css">
+    
+    <!--Styles-->
+        <link rel="stylesheet" href="assets/css/resetStyles.css">
+        <link rel="stylesheet" href="assets/css/estiloLogin.css">
+
+</head>
+
+<body>
+
+    <div class="contenedorPrincipal">
+        <div class="cajaPromocion">
+            <div class="blur"></div>
+            <div class="textoPromocional">
+                <p class="sobreTitulo">Sistema Clipping</p>
+                <p class="titulo">Leche Gloria</p>
+                <p class="descripcion"></p>
+            </div>            
+        </div>
+
+        <div class="cajaLogin">
+            <div class="blurLogin"></div>
+            <img src="assets/img/LogoCompania.png" alt="Proporcionado por: ProActiva Consultores" class="CompañiaPadreCel">
+            <div class="prueba">
+                <div class="logoEmpresa">
+                    <img src="assets/img/logoEmpresa.svg" alt="">
+                </div>
+                <form method="post" action="assets/model/verificacionLogin.php" class="formularioLogin d-flex justify-content-center align-items-center" id="formularioLogin">
+                    
+                        <input type="text" class="form-control inputUsuario" id="inputUsuario" aria-describedby="" name="usuario" placeholder="Usuario" >                                        
+                    
+                        <input type="password" class="form-control inputContraseña" id="inputContraseña" name="contraseña" placeholder="Contraseña" >
+                    
+                        <button class="botonSubmit" type="submit" name="BotonPresionado" value="BotonPresionado">Ingresar</button>                        
+
+                </form>
+                <a class="contraseñaOlvidada" href="#">¿Olvidaste tu contraseña?</a><!--Numero del administrador-->
+                <img src="assets/img/LogoCompania.png" alt="Proporcionado por: ProActiva Consultores" class="CompañiaPadre">
+            </div>
+                
+        </div>
+            
+    </div>    
+
+
+
+
+
+
+    <!--Sweet Alert 2-->
+        <script src="assets/js/sweetAlertJS/sweetalert2.all.min.js"></script>
+    <!--Validacion de inputs-->
+        <script src="assets/js/validations/validationLogin.js"></script>
+    <!--Boostrap-->
+        <script src="assets/js/Boostrap5/bootstrap.bundle.min.js"></script>
+    <!--Funciones JS-->
+        <script src="assets/js/sweetAlertJS/alertasSweeAlertFrontEnd.js"></script>
+        <script src="assets/js/sweetAlertJS/alertasSweeAlertBackEnd.js"></script>
+</body>
+
+</html>
