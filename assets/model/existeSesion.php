@@ -11,9 +11,6 @@ if(empty($_SESSION["Nombre"])){
         case 'Admin':
             header("Location: ../vistas/admin/vistaGenerica.php");
             break;
-        case 'Periodista':
-            header("Location: ../vistas/periodista/vistaGenerica.php");
-            break;
         case 'Usuario':
             header("Location: ../vistas/usuario/vistaGenerica.php");
             break;

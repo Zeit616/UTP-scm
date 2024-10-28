@@ -132,7 +132,7 @@
                                             <label for="BuscarRol" class="form-label">Rol</label>
                                             <select class="custom-select" id="BuscarRol" data-index = "4">
                                                 <option value="" selected>Seleccione rol del usuario</option>
-                                                <option value="Periodista">Periodista</option>
+                                                <option value="Admin">Administrador</option>
                                                 <option value="Usuario">Usuario</option>
                                             </select>
                                         </div>

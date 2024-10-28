@@ -1,7 +1,7 @@
 <?php
 require_once "../conexcionDataBase.php";
 
-    $stmt = conection::conectar()->prepare("SELECT `id`, Nombre, Usuario, Contraseña, Rol, Estado, '' as opciones FROM `usuarios` WHERE Rol NOT LIKE '%Admin%'");
+    $stmt = conection::conectar()->prepare("SELECT `id`, Nombre, Usuario, Contraseña, Rol, Estado, '' as opciones FROM `usuarios`");
 
     $stmt -> execute();
 
