@@ -46,7 +46,7 @@
                                                     <label for="AñadirRolUsuario">Rol</label>
                                                     <select class="custom-select" id="AñadirRolUsuario" name="NameAñadirRolUsuario">
                                                         <option value="" disabled selected hidden>Seleccione el rol del usuario</option>
-                                                        <option value="Periodista">Periodista</option>
+                                                        <option value="Admin">Administrador</option>
                                                         <option value="Usuario">Usuario</option>
                                                     </select>
                                                 </div>
@@ -86,7 +86,7 @@
                                                     <label for="EditarRolUsuario">Rol</label>
                                                     <select class="custom-select" id="EditarRolUsuario" name="NameEditarRolUsuario">
                                                         <option value="" disabled selected hidden>Seleccione el rol del usuario</option>
-                                                        <option value="Periodista">Periodista</option>
+                                                        <option value="Admin">Administrador</option>
                                                         <option value="Usuario">Usuario</option>
                                                     </select>
                                                 </div>
