@@ -29,8 +29,7 @@ $(function() {
       data: { inicio: inicio, fin: fin }, // Pasar los valores de fecha al archivo PHP
       success: function(data) {
         console.log(data);
-        // Los datos se obtuvieron correctamente
-          console.log(data);
+        
         // Definir los colores para el gráfico de donut chart
         var positiveColor = '#00a65a'; // Verde
         var negativeColor = '#f56954'; // Rojo
@@ -71,8 +70,6 @@ $(function() {
           ]
         };
 
-        
-
         var chartOptions = {
           maintainAspectRatio: false,
           responsive: true,
@@ -100,7 +97,6 @@ $(function() {
         });
       },
       error: function(xhr, status, error) {
-        // Ocurrió un error al obtener los datos del archivo PHP
         console.error(error);
       }
     });
@@ -108,10 +104,12 @@ $(function() {
 
   // Asignar el evento de cambio de valor a los campos de fecha
   $('#inicioBusqueda, #finBusqueda').change(function() {
-    // Actualizar los gráficos
     actualizarGraficos();
   });
 
   // Inicializar los gráficos
   actualizarGraficos();
+
+  // Actualizar automáticamente cada 10 segundos (10000 milisegundos)
+  setInterval(actualizarGraficos, 10000);
 });

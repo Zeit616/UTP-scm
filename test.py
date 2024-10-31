@@ -1,12 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.edge.options import Options
-import pandas as pd
-import time
 import re
+import time
 import nltk
 from nltk.corpus import stopwords
-from transformers import pipeline  # Importamos el pipeline de Hugging Face
+from transformers import pipeline
+import mysql.connector
+from datetime import datetime
 
 # Descargar stopwords la primera vez
 nltk.download('stopwords')
@@ -18,7 +19,7 @@ classifier = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingua
 # Configuración de Selenium para usar Microsoft Edge
 def iniciar_driver():
     edge_options = Options()
-    edge_options.add_argument("--headless") 
+    edge_options.add_argument("--headless")
     edge_options.add_argument("--no-sandbox")
     edge_options.add_argument("--disable-dev-shm-usage")
     
@@ -27,13 +28,9 @@ def iniciar_driver():
 
 # Función para limpiar el texto
 def limpiar_texto(texto):
-    # Eliminar URLs
     texto = re.sub(r'http\S+', '', texto)
-    # Eliminar caracteres especiales y números
     texto = re.sub(r'[^A-Za-záéíóúñÁÉÍÓÚÑ\s]', '', texto)
-    # Convertir a minúsculas
     texto = texto.lower()
-    # Eliminar stopwords
     palabras = texto.split()
     palabras = [palabra for palabra in palabras if palabra not in stop_words]
     return ' '.join(palabras)
@@ -42,10 +39,8 @@ def limpiar_texto(texto):
 def extraer_opiniones(url):
     driver = iniciar_driver()
     driver.get(url)
-    
-    time.sleep(5)  # Esperar a que la página cargue
+    time.sleep(5)
 
-    # Extraer todas las opiniones
     opiniones = []
     bloques = driver.find_elements("css selector", 'blockquote.messageText.SelectQuoteContainer.ugc.baseHtml')
 
@@ -53,37 +48,70 @@ def extraer_opiniones(url):
         opinion = bloque.text.strip()  
         if opinion:  
             opiniones.append(opinion)
-            print(opinion) 
+            #print(opinion) 
     
     driver.quit()
     return opiniones
 
 # Función para analizar el sentimiento con transformers
 def analizar_sentimiento_transformers(opinion):
-    # Usamos el clasificador para predecir el sentimiento
     resultado = classifier(opinion)[0]
-    # Hugging Face devuelve etiquetas como '1 estrella', '5 estrellas', etc.
-    if '5' in resultado['label']:
-        return 'Positivo'
-    elif '4' in resultado['label']:
+    if '5' in resultado['label'] or '4' in resultado['label']:
         return 'Positivo'
     elif '3' in resultado['label']:
         return 'Neutro'
-    elif '2' in resultado['label']:
-        return 'Negativo'
-    elif '1' in resultado['label']:
+    elif '2' in resultado['label'] or '1' in resultado['label']:
         return 'Negativo'
     else:
         return 'Neutro'
 
-# Guardar los resultados en un archivo CSV
-def guardar_en_csv(opiniones, sentimientos, archivo):
-    df = pd.DataFrame({
-        'Opinion': opiniones,
-        'Sentimiento': sentimientos
-    })
-    df.to_csv(archivo, index=False)
-    print(f"Archivo CSV guardado como {archivo}")
+# Conexión a la base de datos
+def conectar_db():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",  
+        password="",  
+        database="scm"  
+    )
+
+# Generar código de noticia
+def generar_cod_noticia():
+    conn = conectar_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT CodPerteneciente, CodAlmacenado FROM contenedordecodigos WHERE CodPerteneciente = 'CodMedio'")
+    resultado = cursor.fetchone()
+    CodPerteneciente, CodAlmacenado = resultado[0], int(resultado[1])
+    nuevo_cod_almacenado = CodAlmacenado + 1
+    CodMedio = CodPerteneciente + str(nuevo_cod_almacenado)
+    
+    cursor.execute("UPDATE contenedordecodigos SET CodAlmacenado = %s WHERE CodPerteneciente = 'CodMedio'", (nuevo_cod_almacenado,))
+    conn.commit()
+    
+    cursor.close()
+    conn.close()
+    
+    return CodMedio
+
+# Guardar cada registro en la tabla MySQL
+def guardar_en_db(opiniones, sentimientos):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    fecha_actual = datetime.now().strftime('%Y-%m-%d')
+
+    for opinion, sentimiento in zip(opiniones, sentimientos):
+        cod_noticia = generar_cod_noticia()
+        query = """
+            INSERT INTO noticia (CodNoticia, FechaNoticia, Medio, Espacio, Impacto)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        valores = (cod_noticia, fecha_actual, 'Foros', opinion, sentimiento)
+        cursor.execute(query, valores)
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+    #print("Opiniones guardadas en la base de datos.")
 
 # URL del foro
 url = "https://www.forosperu.net/temas/que-opinan-de-la-utp.1421819/"
@@ -97,5 +125,5 @@ opiniones_limpias = [limpiar_texto(opinion) for opinion in opiniones]
 # Analizar el sentimiento de cada opinión usando transformers
 sentimientos = [analizar_sentimiento_transformers(opinion) for opinion in opiniones_limpias]
 
-# Guardar en CSV
-guardar_en_csv(opiniones, sentimientos, 'opiniones_utp_transformers.csv')
+# Guardar en base de datos
+guardar_en_db(opiniones, sentimientos)
