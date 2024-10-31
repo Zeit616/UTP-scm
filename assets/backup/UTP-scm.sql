@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 31-10-2024 a las 20:44:44
+-- Tiempo de generación: 28-10-2024 a las 16:45:28
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,10 +29,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `agenda` (
   `CodContacto` int(11) NOT NULL,
-  `CodMedio` varchar(50) NOT NULL,
-  `Nombre` text NOT NULL,
-  `Telefono` varchar(9) NOT NULL,
-  `Correo` text NOT NULL
+  `CodMedio` varchar(255) NOT NULL,
+  `Nombre` text DEFAULT NULL,
+  `Telefono` varchar(255) NOT NULL,
+  `Correo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -43,17 +43,9 @@ CREATE TABLE `agenda` (
 
 CREATE TABLE `contenedordecodigos` (
   `Id` int(11) NOT NULL,
-  `CodPerteneciente` varchar(50) NOT NULL,
+  `CodPerteneciente` varchar(255) NOT NULL,
   `CodAlmacenado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `contenedordecodigos`
---
-
-INSERT INTO `contenedordecodigos` (`Id`, `CodPerteneciente`, `CodAlmacenado`) VALUES
-(1, 'CodMedio', 0),
-(2, 'CodNoticia', 0);
 
 -- --------------------------------------------------------
 
@@ -62,9 +54,9 @@ INSERT INTO `contenedordecodigos` (`Id`, `CodPerteneciente`, `CodAlmacenado`) VA
 --
 
 CREATE TABLE `medios` (
-  `CodMedio` varchar(50) NOT NULL,
-  `Nombre` text NOT NULL,
-  `Categoria` varchar(50) NOT NULL
+  `CodMedio` varchar(255) NOT NULL,
+  `Nombre` text DEFAULT NULL,
+  `Categoria` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -74,18 +66,18 @@ CREATE TABLE `medios` (
 --
 
 CREATE TABLE `noticia` (
-  `CodNoticia` varchar(50) NOT NULL,
-  `FechaNoticia` date NOT NULL,
-  `Medio` varchar(50) NOT NULL,
-  `Titular` text NOT NULL,
-  `Espacio` text NOT NULL,
-  `Periodista` text NOT NULL,
-  `Impacto` varchar(50) NOT NULL,
-  `ComentarioArticulo` text NOT NULL,
-  `Recomendaciones` text NOT NULL,
-  `FuenteNoticia` text NOT NULL,
-  `ArchivoAdjunto` text NOT NULL,
-  `EnlaceAdicional` text NOT NULL
+  `CodNoticia` varchar(255) NOT NULL,
+  `FechaNoticia` date DEFAULT NULL,
+  `Medio` varchar(255) NOT NULL,
+  `Titular` text DEFAULT NULL,
+  `Espacio` text DEFAULT NULL,
+  `Periodista` text DEFAULT NULL,
+  `Impacto` varchar(255) NOT NULL,
+  `ComentarioArticulo` text DEFAULT NULL,
+  `Recomendaciones` text DEFAULT NULL,
+  `FuenteNoticia` text DEFAULT NULL,
+  `ArchivoAdjunto` text DEFAULT NULL,
+  `EnlaceAdicional` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -96,11 +88,11 @@ CREATE TABLE `noticia` (
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `Nombre` text NOT NULL,
-  `Usuario` varchar(50) NOT NULL,
-  `Contraseña` varchar(50) NOT NULL,
-  `Rol` varchar(50) NOT NULL,
-  `Estado` varchar(50) NOT NULL
+  `Nombre` text DEFAULT NULL,
+  `Usuario` varchar(255) NOT NULL,
+  `Contraseña` varchar(255) NOT NULL,
+  `Rol` varchar(255) NOT NULL,
+  `Estado` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -108,9 +100,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `Nombre`, `Usuario`, `Contraseña`, `Rol`, `Estado`) VALUES
-(1, 'administrador', 'admin', '123', 'Admin', 'Activado'),
-(2, 'periodista', 'periodista', '123', 'Periodista', 'Activado'),
-(3, 'usuario', 'usuario', '123', 'Usuario', 'Activado');
+(1, 'administrador', 'admin', '123', 'Admin', 'Activo');
 
 --
 -- Índices para tablas volcadas
@@ -120,13 +110,15 @@ INSERT INTO `usuarios` (`id`, `Nombre`, `Usuario`, `Contraseña`, `Rol`, `Estado
 -- Indices de la tabla `agenda`
 --
 ALTER TABLE `agenda`
-  ADD PRIMARY KEY (`CodContacto`);
+  ADD PRIMARY KEY (`CodContacto`),
+  ADD KEY `agenda_CodMedio_fk` (`CodMedio`);
 
 --
 -- Indices de la tabla `contenedordecodigos`
 --
 ALTER TABLE `contenedordecodigos`
-  ADD PRIMARY KEY (`Id`);
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `contenedordecodigos_CodPerteneciente_fk2` (`CodPerteneciente`);
 
 --
 -- Indices de la tabla `medios`
@@ -138,7 +130,8 @@ ALTER TABLE `medios`
 -- Indices de la tabla `noticia`
 --
 ALTER TABLE `noticia`
-  ADD PRIMARY KEY (`CodNoticia`);
+  ADD PRIMARY KEY (`CodNoticia`),
+  ADD KEY `noticia_Medio_fk` (`Medio`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -154,19 +147,42 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `agenda`
 --
 ALTER TABLE `agenda`
-  MODIFY `CodContacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `CodContacto` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `contenedordecodigos`
 --
 ALTER TABLE `contenedordecodigos`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `agenda`
+--
+ALTER TABLE `agenda`
+  ADD CONSTRAINT `agenda_CodMedio_fk` FOREIGN KEY (`CodMedio`) REFERENCES `medios` (`CodMedio`);
+
+--
+-- Filtros para la tabla `contenedordecodigos`
+--
+ALTER TABLE `contenedordecodigos`
+  ADD CONSTRAINT `contenedordecodigos_CodPerteneciente_fk1` FOREIGN KEY (`CodPerteneciente`) REFERENCES `noticia` (`CodNoticia`),
+  ADD CONSTRAINT `contenedordecodigos_CodPerteneciente_fk2` FOREIGN KEY (`CodPerteneciente`) REFERENCES `medios` (`CodMedio`);
+
+--
+-- Filtros para la tabla `noticia`
+--
+ALTER TABLE `noticia`
+  ADD CONSTRAINT `noticia_Medio_fk` FOREIGN KEY (`Medio`) REFERENCES `medios` (`CodMedio`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

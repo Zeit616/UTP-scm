@@ -64,11 +64,15 @@ def analizar_sentimiento_transformers(opinion):
     resultado = classifier(opinion)[0]
     # Hugging Face devuelve etiquetas como '1 estrella', '5 estrellas', etc.
     if '5' in resultado['label']:
-        return 'Muy Positivo'
+        return 'Positivo'
     elif '4' in resultado['label']:
         return 'Positivo'
+    elif '3' in resultado['label']:
+        return 'Neutro'
+    elif '2' in resultado['label']:
+        return 'Negativo'
     elif '1' in resultado['label']:
-        return 'Muy Negativo'
+        return 'Negativo'
     else:
         return 'Neutro'
 
