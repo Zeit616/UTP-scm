@@ -1,6 +1,6 @@
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service as EdgeService
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options
 import re
 import time
 import nltk
@@ -16,14 +16,14 @@ stop_words = set(stopwords.words('spanish'))
 # Inicializar el clasificador de transformers para análisis de sentimiento
 classifier = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
 
-# Configuración de Selenium para usar Microsoft Edge
+# Configuración de Selenium para usar Google Chrome
 def iniciar_driver():
-    edge_options = Options()
-    edge_options.add_argument("--headless")
-    edge_options.add_argument("--no-sandbox")
-    edge_options.add_argument("--disable-dev-shm-usage")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     
-    driver = webdriver.Edge(service=EdgeService('C:/msedgedriver.exe'), options=edge_options)
+    driver = webdriver.Chrome(service=ChromeService('C:/chromedriver.exe'), options=chrome_options)
     return driver
 
 # Función para limpiar el texto
@@ -48,7 +48,6 @@ def extraer_opiniones(url):
         opinion = bloque.text.strip()  
         if opinion:  
             opiniones.append(opinion)
-            #print(opinion) 
     
     driver.quit()
     return opiniones
@@ -68,10 +67,10 @@ def analizar_sentimiento_transformers(opinion):
 # Conexión a la base de datos
 def conectar_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",  
-        password="",  
-        database="scm"  
+        host="bg5hkgpf7xqkv4sukieo-mysql.services.clever-cloud.com",
+        user="ufmob2qfxcjv2h7y",  
+        password="CrvkjMmwSBlHCmaspRKy",  
+        database="bg5hkgpf7xqkv4sukieo" 
     )
 
 # Generar código de noticia
@@ -111,7 +110,6 @@ def guardar_en_db(opiniones, sentimientos):
     conn.commit()
     cursor.close()
     conn.close()
-    #print("Opiniones guardadas en la base de datos.")
 
 # URL del foro
 url = "https://www.forosperu.net/temas/que-opinan-de-la-utp.1421819/"
