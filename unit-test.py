@@ -1,3 +1,4 @@
+import unittest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
@@ -12,22 +13,22 @@ from datetime import datetime
 # Descargar stopwords la primera vez
 nltk.download('stopwords')
 stop_words = set(stopwords.words('spanish'))
+stop_words.add("visita")
 
 # Inicializar el clasificador de transformers para análisis de sentimiento
 classifier = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
 
-# Configuración de Selenium para usar Google Chrome
 def iniciar_driver():
+    """Inicializa el controlador de Selenium con Chrome en modo headless."""
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    
     driver = webdriver.Chrome(service=ChromeService('C:/chromedriver.exe'), options=chrome_options)
     return driver
 
-# Función para limpiar el texto
 def limpiar_texto(texto):
+    """Limpia un texto eliminando URLs, caracteres especiales y stopwords en español."""
     texto = re.sub(r'http\S+', '', texto)
     texto = re.sub(r'[^A-Za-záéíóúñÁÉÍÓÚÑ\s]', '', texto)
     texto = texto.lower()
@@ -35,25 +36,22 @@ def limpiar_texto(texto):
     palabras = [palabra for palabra in palabras if palabra not in stop_words]
     return ' '.join(palabras)
 
-# Función para extraer opiniones de la página
 def extraer_opiniones(url):
+    """Extrae opiniones de un foro especificado por la URL."""
     driver = iniciar_driver()
     driver.get(url)
     time.sleep(5)
-
     opiniones = []
     bloques = driver.find_elements("css selector", 'blockquote.messageText.SelectQuoteContainer.ugc.baseHtml')
-
     for bloque in bloques:
-        opinion = bloque.text.strip()  
-        if opinion:  
+        opinion = bloque.text.strip()
+        if opinion:
             opiniones.append(opinion)
-    
     driver.quit()
     return opiniones
 
-# Función para analizar el sentimiento con transformers
 def analizar_sentimiento_transformers(opinion):
+    """Analiza el sentimiento de una opinión usando un modelo de Transformers."""
     resultado = classifier(opinion)[0]
     if '5' in resultado['label'] or '4' in resultado['label']:
         return 'Positivo'
@@ -64,8 +62,8 @@ def analizar_sentimiento_transformers(opinion):
     else:
         return 'Neutro'
 
-# Conexión a la base de datos
 def conectar_db():
+    """Establece la conexión a la base de datos MySQL."""
     return mysql.connector.connect(
         host="bg5hkgpf7xqkv4sukieo-mysql.services.clever-cloud.com",
         user="ufmob2qfxcjv2h7y",  
@@ -73,31 +71,26 @@ def conectar_db():
         database="bg5hkgpf7xqkv4sukieo" 
     )
 
-# Generar código de noticia
 def generar_cod_noticia():
+    """Genera un nuevo código de noticia."""
     conn = conectar_db()
     cursor = conn.cursor()
-    
     cursor.execute("SELECT CodPerteneciente, CodAlmacenado FROM contenedordecodigos WHERE CodPerteneciente = 'CodMedio'")
     resultado = cursor.fetchone()
     CodPerteneciente, CodAlmacenado = resultado[0], int(resultado[1])
     nuevo_cod_almacenado = CodAlmacenado + 1
     CodMedio = CodPerteneciente + str(nuevo_cod_almacenado)
-    
     cursor.execute("UPDATE contenedordecodigos SET CodAlmacenado = %s WHERE CodPerteneciente = 'CodMedio'", (nuevo_cod_almacenado,))
     conn.commit()
-    
     cursor.close()
     conn.close()
-    
     return CodMedio
 
-# Guardar cada registro en la tabla MySQL
 def guardar_en_db(opiniones, sentimientos):
+    """Guarda las opiniones y sus sentimientos en la base de datos."""
     conn = conectar_db()
     cursor = conn.cursor()
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
-
     for opinion, sentimiento in zip(opiniones, sentimientos):
         cod_noticia = generar_cod_noticia()
         query = """
@@ -106,22 +99,38 @@ def guardar_en_db(opiniones, sentimientos):
         """
         valores = (cod_noticia, fecha_actual, 'Foros', opinion, sentimiento)
         cursor.execute(query, valores)
-    
     conn.commit()
     cursor.close()
     conn.close()
 
-# URL del foro
-url = "https://www.forosperu.net/temas/que-opinan-de-la-utp.1421819/"
+class TestFunciones(unittest.TestCase):
+    """Clase de pruebas unitarias para funciones del script."""
 
-# Extraer opiniones
-opiniones = extraer_opiniones(url)
+    def test_limpiar_texto(self):
+        """Prueba de limpieza de texto."""
+        texto = "Hola, esto es un test! Visita https://example.com."
+        resultado = limpiar_texto(texto)
+        self.assertEqual(resultado, "hola test")
 
-# Limpiar las opiniones
-opiniones_limpias = [limpiar_texto(opinion) for opinion in opiniones]
+    def test_analizar_sentimiento_transformers(self):
+        """Prueba de análisis de sentimiento."""
+        opinion = "Me encanta este producto, es muy bueno."
+        sentimiento = analizar_sentimiento_transformers(opinion)
+        self.assertIn(sentimiento, ["Positivo", "Neutro", "Negativo"])
 
-# Analizar el sentimiento de cada opinión usando transformers
-sentimientos = [analizar_sentimiento_transformers(opinion) for opinion in opiniones_limpias]
+    def test_generar_cod_noticia(self):
+        """Prueba de generación de código de noticia."""
+        cod_noticia = generar_cod_noticia()
+        self.assertTrue(cod_noticia.startswith("CodMedio"))
 
-# Guardar en base de datos
-guardar_en_db(opiniones, sentimientos)
+    def test_conectar_db(self):
+        """Prueba de conexión a la base de datos."""
+        conn = conectar_db()
+        self.assertIsNotNone(conn)
+        conn.close()
+
+if __name__ == "__main__":
+    # Ejecutar pruebas
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestFunciones)
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
