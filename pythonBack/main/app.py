@@ -14,6 +14,10 @@ urls = [
     "https://www.forosperu.net/temas/grupo-gloria-reconoce-que-vendera-en-eeuu-leche-pura-de-vaca-y-en-peru-no.1356513/",
     "https://www.forosperu.net/temas/aspec-gloria-y-nestle-no-deben-vender-en-peru-sus-productos-como-leche-ev.1097447/"
 ]
+#url de prueba
+#urls = [
+#    "https://www.forosperu.net/temas/aspec-gloria-y-nestle-no-deben-vender-en-peru-sus-productos-como-leche-ev.1097447/"
+#]
 
 # Recorrer cada URL para extraer, limpiar, analizar y guardar las opiniones
 for url in urls:
