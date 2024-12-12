@@ -17,7 +17,6 @@ def iniciar_driver():
     return driver
 
 def extraer_opiniones_pagina(driver):
-    """Extrae opiniones de una sola página."""
     opiniones = []
     bloques = driver.find_elements(By.CSS_SELECTOR, 'blockquote.messageText.SelectQuoteContainer.ugc.baseHtml')
     for bloque in bloques:
